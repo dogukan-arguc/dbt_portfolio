@@ -1,2 +1,7 @@
-*.csv
 .venv/
+archive/
+*.duckdb
+*.duckdb.wal
+target/
+dbt_packages/
+logs/
