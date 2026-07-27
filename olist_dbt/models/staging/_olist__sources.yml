@@ -1,0 +1,11 @@
+version: 2
+
+
+sources:
+  - name: olist
+    database: olist
+    schema: raw
+    description: Kaggle Olist Brazilian E-Commerce dump
+    tables:
+      - name: orders
+        identifier: orders
