@@ -1,0 +1,25 @@
+[0m01:09:31.772399 [debug] [MainThread]: Got an exception trying to initialize tracking
+
+
+============================== 01:09:31.831865 | 8273bb02-1837-43e2-810a-22d865b7ae57 ==============================
+[0m01:09:31.831865 [info ] [MainThread]: Running with dbt=1.10.22
+[0m01:09:31.832461 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'no_print': 'None', 'static_parser': 'True', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'printer_width': '80', 'write_json': 'True', 'introspect': 'True', 'log_cache_events': 'False', 'empty': 'None', 'cache_selected_only': 'False', 'log_format': 'default', 'debug': 'False', 'fail_fast': 'False', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': 'C:\\Users\\doguk\\.dbt', 'indirect_selection': 'eager', 'use_colors': 'True', 'invocation_command': 'dbt init olist_dbt --skip-profile-setup', 'use_experimental_parser': 'False', 'log_path': 'logs'}
+[0m01:09:31.848643 [debug] [MainThread]: Starter project path: C:\Users\doguk\dbt_portfolio\.venv\Lib\site-packages\dbt\include\starter_project
+[0m01:09:31.873154 [info ] [MainThread]: 
+Your new dbt project "olist_dbt" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m01:09:31.873154 [debug] [MainThread]: Command `dbt init` succeeded at 01:09:31.873154 after 0.14 seconds
+[0m01:09:31.874153 [debug] [MainThread]: Flushing usage events
