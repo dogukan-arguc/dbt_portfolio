@@ -55,31 +55,39 @@ Chat conversation with the owner is in **Turkish**.
 
 ## Environment
 
-- **Python 3.12** (`py -3.12`). Not 3.14 — the global 3.14 install has `dbt-snowflake`
-  and no DuckDB adapter, and dbt-core 1.10 does not support 3.14. Never install project
-  packages globally.
-- **`.venv/` at repo root**, gitignored. Its current state is an empty stub left over from
-  a deleted commit; it must be recreated (task `0.1`).
-- Pins live in `Requirements.txt`: `dbt-core~=1.10.22`, `dbt-duckdb~=1.10.1`,
-  `duckdb~=1.5.0`. dbt-core 1.10 is the version the certification targets — do not bump
-  to 1.11/1.12 without a deliberate decision.
+**uv manages this project.** Do not use `pip`, `python -m venv`, or the global Python
+directly — the global 3.14 install has `dbt-snowflake` and no DuckDB adapter, and would
+mislead any check run against it.
+
+- Dependencies are declared in `pyproject.toml` and resolved in **`uv.lock`, which is
+  committed**. `uv sync` reproduces the environment exactly; never hand-edit the lock.
+- **Python 3.12**, pinned by `.python-version` and fetched by uv on demand. The stack
+  supports 3.10–3.13; 3.14 has no dbt-duckdb build.
+- Pinned: `dbt-core~=1.10.22`, `dbt-duckdb~=1.10.1`, `duckdb~=1.5.0`. dbt-core 1.10 is
+  the version the certification targets — do not bump to 1.11/1.12 without a deliberate
+  decision.
 - **Node v24** is installed, for the Evidence.dev BI layer in phase 7.
 
-```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r Requirements.txt
+```bash
+uv sync                   # create/refresh .venv from the lock
+uv run dbt --version      # run a command without activating
+uv add <package>          # add a dependency and update the lock
 ```
+
+`uv run` resolves the project from any subdirectory, so it works from `olist_dbt/`
+without activation. Prefix Python and dbt invocations with `uv run` unless the
+environment is known to be active.
 
 ### Working from another machine
 
 A fresh clone is code only — no `archive/`, no `olist.duckdb`, no `.venv/`. Nothing
 machine-specific is committed, so the sequence is always:
 
-1. Install Python 3.12, clone the repo, create the venv, `pip install -r Requirements.txt`.
+1. Install uv, clone the repo, run `uv sync`. Python itself comes from uv — there is no
+   separate interpreter install step.
 2. Fetch the raw CSVs into `archive/` from Kaggle (task `0.4` automates this).
-3. `python load_to_duckdb.py` to build `olist.duckdb`.
-4. `cd olist_dbt`, then `dbt debug` and `dbt build`.
+3. `uv run python load_to_duckdb.py` to build `olist.duckdb`.
+4. `cd olist_dbt`, then `uv run dbt debug` and `uv run dbt build`.
 
 `profiles.yml` is committed, so there is no `~/.dbt/` setup step. The warehouse itself
 never travels through git — it is rebuilt from source data on every machine, which is the
@@ -91,20 +99,20 @@ project and steps 2–3 become optional for a quick look.
 Run dbt from **inside `olist_dbt/`** — `profiles.yml` lives there (not in `~/.dbt/`) and
 points at `../olist.duckdb` by relative path. Running from the repo root will not resolve.
 
-```powershell
+```bash
 cd olist_dbt
-dbt debug              # verify connection first when anything looks wrong
-dbt deps               # after touching packages.yml
-dbt build              # run + test, the default working loop
-dbt build --select stg_orders+     # a model and everything downstream
-dbt test --select source:olist     # source freshness / source tests
-dbt docs generate; dbt docs serve
+uv run dbt debug              # verify connection first when anything looks wrong
+uv run dbt deps               # after touching packages.yml
+uv run dbt build              # run + test, the default working loop
+uv run dbt build --select stg_orders+     # a model and everything downstream
+uv run dbt test --select source:olist     # source freshness / source tests
+uv run dbt docs generate      # then: uv run dbt docs serve
 ```
 
-Reload raw data from CSV (from repo root, venv active):
+Reload raw data from CSV (from repo root):
 
-```powershell
-python load_to_duckdb.py
+```bash
+uv run python load_to_duckdb.py
 ```
 
 **DuckDB single-writer lock:** DuckDB allows one writer at a time. If `dbt` fails with a
@@ -118,8 +126,10 @@ VS Code extension. Close it. For read-only inspection always connect with
 dbt_portfolio/
 ├── CLAUDE.md              # this file
 ├── TASKS.md               # the roadmap — the owner's working document
-├── README.md              # portfolio front door (phase 8)
-├── Requirements.txt       # pinned Python deps
+├── README.md              # setup guide; becomes the portfolio front door in phase 8
+├── pyproject.toml         # dependency declarations
+├── uv.lock                # resolved versions — committed
+├── .python-version        # 3.12
 ├── load_to_duckdb.py      # CSV -> raw schema loader
 ├── ui.py                  # DuckDB web UI launcher (holds a write lock!)
 ├── archive/               # 9 Kaggle CSVs, 121 MB — GITIGNORED

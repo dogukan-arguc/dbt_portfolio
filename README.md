@@ -15,54 +15,55 @@ modelling layers are being built. See [`TASKS.md`](TASKS.md) for the full roadma
 | --- | --- |
 | Warehouse | DuckDB (single-file, no server) |
 | Transformation | dbt-core 1.10 + dbt-duckdb |
+| Environment | uv — manages the Python version and a locked dependency set |
 | Language | Python 3.12, SQL |
 | Planned | GitHub Actions CI, dbt docs on GitHub Pages, Evidence.dev dashboard |
 
 ## Prerequisites
 
-- **Python 3.12.** The stack supports 3.10–3.13; **Python 3.14 will not work**, as
-  dbt-duckdb has no build for it. 3.12 is what this project is developed against. Check
-  what you have with `py --list` on Windows, and install from
-  [python.org](https://www.python.org/downloads/) if needed.
+- **[uv](https://docs.astral.sh/uv/)** — manages both the Python version and the
+  dependencies:
+
+  ```powershell
+  winget install --id=astral-sh.uv -e
+  ```
+
+  <details><summary>Other install methods</summary>
+
+  ```bash
+  curl -LsSf https://astral.sh/uv/install.sh | sh              # macOS / Linux
+  powershell -c "irm https://astral.sh/uv/install.ps1 | iex"   # Windows without winget
+  ```
+  </details>
+
 - **Git**
 - A **Kaggle account**, to download the raw data.
+
+**You do not need to install Python yourself.** `.python-version` pins this project to
+3.12 and uv fetches that interpreter on demand. (For reference: the stack supports
+3.10–3.13 — Python 3.14 will not work, as dbt-duckdb publishes no build for it.)
 
 ---
 
 ## Getting started
 
-### 1. Clone and create the environment
-
-```powershell
-git clone https://github.com/dargucpmi/dbt_portfolio.git
-cd dbt_portfolio
-py -3.12 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r Requirements.txt
-```
-
-<details><summary>Git Bash / macOS / Linux</summary>
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/dargucpmi/dbt_portfolio.git
 cd dbt_portfolio
-python3.12 -m venv .venv
-source .venv/Scripts/activate      # Windows Git Bash
-source .venv/bin/activate          # macOS / Linux
-pip install -r Requirements.txt
-```
-</details>
-
-If PowerShell blocks the activation script, allow it for the current session only:
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+uv sync
 ```
 
-Verify the environment — the DuckDB adapter must appear in the plugin list:
+That is the entire setup, and it is identical on PowerShell, Git Bash, macOS, and Linux.
+`uv sync` fetches Python 3.12 if it is missing, creates `.venv/`, and installs the exact
+versions recorded in `uv.lock` — so every machine and CI run gets a byte-identical
+environment.
 
-```powershell
-dbt --version
+Verify it — the DuckDB adapter must appear in the plugin list:
+
+```bash
+uv run dbt --version
 ```
 
 ### 2. Get the raw data
@@ -93,10 +94,10 @@ archive/
 
 ### 3. Build the warehouse
 
-From the repository root, with the venv active:
+From the repository root:
 
-```powershell
-python load_to_duckdb.py
+```bash
+uv run python load_to_duckdb.py
 ```
 
 This creates `olist.duckdb` with a `raw` schema and prints a row count per table. The
@@ -110,11 +111,19 @@ loader strips the `olist_` prefix and `_dataset` suffix, so
 `../olist.duckdb` by relative path, so dbt will not resolve the connection from anywhere
 else. There is no `~/.dbt/` setup step — the profile is committed.
 
-```powershell
+```bash
 cd olist_dbt
-dbt debug        # all checks should pass
-dbt deps         # once packages.yml exists
-dbt build        # run models + tests
+uv run dbt debug        # all checks should pass
+uv run dbt deps         # once packages.yml exists
+uv run dbt build        # run models + tests
+```
+
+`uv run` works from any subdirectory — it walks up to find `pyproject.toml` — so there is
+no activation step. If you would rather type plain `dbt`, activate the environment once
+per shell instead:
+
+```powershell
+..\.venv\Scripts\Activate.ps1     # PowerShell, from olist_dbt/
 ```
 
 If `dbt debug` passes, you are set up. Open [`TASKS.md`](TASKS.md) and start at phase 0.
@@ -123,28 +132,33 @@ If `dbt debug` passes, you are set up. Open [`TASKS.md`](TASKS.md) and start at 
 
 ## Common commands
 
-All of these run from `olist_dbt/`:
+All of these run from `olist_dbt/`. Drop the `uv run` prefix if you activated the
+environment.
 
-```powershell
-dbt build                          # run + test everything
-dbt build --select stg_orders+     # a model and everything downstream
-dbt run --select marts             # one folder
-dbt test                           # tests only
-dbt source freshness               # source freshness checks
-dbt docs generate; dbt docs serve  # browse the lineage graph
-dbt compile --select my_model      # inspect generated SQL when debugging
+```bash
+uv run dbt build                          # run + test everything
+uv run dbt build --select stg_orders+     # a model and everything downstream
+uv run dbt run --select marts             # one folder
+uv run dbt test                           # tests only
+uv run dbt source freshness               # source freshness checks
+uv run dbt docs generate                  # then: uv run dbt docs serve
+uv run dbt compile --select my_model      # inspect generated SQL when debugging
 ```
 
-Reload the raw data from CSV (from the repository root):
+From the repository root — reload the raw data from CSV, or explore the warehouse in a
+browser:
 
-```powershell
-python load_to_duckdb.py
+```bash
+uv run python load_to_duckdb.py
+uv run python ui.py
 ```
 
-Explore the warehouse interactively in a browser:
+Dependency management:
 
-```powershell
-python ui.py
+```bash
+uv sync                   # match the environment to uv.lock
+uv add <package>          # add a dependency and update the lock
+uv lock --upgrade         # deliberately refresh pins
 ```
 
 > **DuckDB allows one writer at a time.** If dbt fails with a lock error, another process
@@ -160,7 +174,9 @@ dbt_portfolio/
 ├── README.md              # you are here
 ├── CLAUDE.md              # conventions, environment, dataset pitfalls
 ├── TASKS.md               # the build roadmap
-├── Requirements.txt       # pinned Python dependencies
+├── pyproject.toml         # dependency declarations
+├── uv.lock                # exact resolved versions — committed on purpose
+├── .python-version        # 3.12, fetched automatically by uv
 ├── load_to_duckdb.py      # CSV -> DuckDB raw schema
 ├── ui.py                  # DuckDB web UI launcher
 ├── archive/               # raw CSVs (gitignored, download yourself)
