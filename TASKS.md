@@ -20,17 +20,19 @@ are what make a hiring manager stop scrolling.
 
 Goal: a clone-and-run repo on a clean, pinned environment.
 
-- [ ] **0.1 Recreate the virtual environment** `[DEV]`
+- [x] **0.1 Set up the environment with uv** `[DEV]`
 
-  `.venv/` is an empty stub from a deleted commit. Build a real one on **Python 3.12**
-  (not the global 3.14) and install `Requirements.txt`.
+  `pyproject.toml` declares the dependencies, `.python-version` pins Python 3.12, and
+  `uv.lock` is committed. `uv sync` builds `.venv/` from the lock, fetching the
+  interpreter if needed.
 
-  *Done when:* `dbt --version` inside the activated venv reports dbt-core 1.10.x with the
-  duckdb adapter listed.
+  *Done when:* `uv run dbt --version` reports dbt-core 1.10.x with the duckdb adapter
+  listed. ✅ dbt-core 1.10.23, duckdb 1.10.1.
 
-- [ ] **0.2 Verify the connection** `[DEBUG]`
+- [x] **0.2 Verify the connection** `[DEBUG]`
 
-  Run `dbt debug` from inside `olist_dbt/`. Understand *why* it must be run from there.
+  Run `uv run dbt debug` from inside `olist_dbt/`. Understand *why* it must be run from
+  there. ✅ All checks passed.
 
   *Done when:* all checks pass, and you can explain in one sentence how dbt located
   `profiles.yml` and the DuckDB file.
@@ -60,7 +62,7 @@ Goal: a clone-and-run repo on a clean, pinned environment.
 
   <details><summary>Hint</summary>
 
-  The `kaggle` CLI (`pip install kaggle`) reads credentials from `~/.kaggle/kaggle.json`.
+  The `kaggle` CLI (`uv add kaggle`) reads credentials from `~/.kaggle/kaggle.json`.
   The dataset slug is `olistbr/brazilian-ecommerce`. Add the credential path to the README
   prerequisites — never commit the token.
   </details>
@@ -98,8 +100,8 @@ Goal: a clone-and-run repo on a clean, pinned environment.
 - [ ] **0.6 Add packages** `[DEV]`
 
   Create `packages.yml` with `dbt_utils`, `dbt_expectations`, `codegen`, and `dbt_date`.
-  Run `dbt deps`. Confirm `dbt_packages/` is gitignored but `package-lock.yml` is
-  **committed**.
+  Run `uv run dbt deps`. Confirm `dbt_packages/` is gitignored but `package-lock.yml` is
+  **committed** — the same reasoning as `uv.lock`, one layer down.
 
   *Done when:* `dbt deps` succeeds and you know what each package is for.
 
@@ -485,17 +487,21 @@ click.
 
 - [ ] **6.1 CI on pull requests** ⭐ `[DEPLOY]`
 
-  A GitHub Actions workflow that on every PR sets up Python 3.12, installs pinned deps,
-  seeds the sample data from 0.5, and runs `dbt build`. Since DuckDB is a file, CI needs
-  no warehouse credentials at all — this project can have genuinely free, fast CI, which
-  most portfolio dbt projects cannot.
+  A GitHub Actions workflow that on every PR installs the locked environment, seeds the
+  sample data from 0.5, and runs `dbt build`. Since DuckDB is a file, CI needs no
+  warehouse credentials at all — this project can have genuinely free, fast CI, which most
+  portfolio dbt projects cannot.
 
   *Done when:* a PR shows a green check, and a deliberately broken model turns it red.
 
   <details><summary>Hint</summary>
 
-  This is exactly why 0.5 matters — without committed seeds, CI has no data. Cache
-  `~/.cache/pip` and `dbt_packages/` to keep the run fast.
+  This is exactly why 0.5 matters — without committed seeds, CI has no data.
+
+  Use the `astral-sh/setup-uv` action with `enable-cache: true`, then `uv sync --locked`.
+  The `--locked` flag makes CI **fail** if `uv.lock` is out of sync with
+  `pyproject.toml`, which is the behaviour you want — it catches a dependency change
+  someone forgot to lock. Cache `dbt_packages/` separately.
   </details>
 
 - [ ] **6.2 Slim CI with state comparison** ⭐ `[STATE]` `[DEPLOY]`
