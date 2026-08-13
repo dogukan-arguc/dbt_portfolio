@@ -94,7 +94,7 @@ Goal: a clone-and-run repo on a clean, pinned environment.
   it is relative to that same directory.
   </details>
 
-- [ ] **0.3 Repo hygiene** `[DEV]`
+- [x] **0.3 Repo hygiene** `[DEV]`
 
   Decide the final top-level structure. Two open items:
 
