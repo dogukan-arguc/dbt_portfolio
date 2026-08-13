@@ -71,6 +71,21 @@ py -3.12 -m venv .venv
 pip install -r Requirements.txt
 ```
 
+### Working from another machine
+
+A fresh clone is code only — no `archive/`, no `olist.duckdb`, no `.venv/`. Nothing
+machine-specific is committed, so the sequence is always:
+
+1. Install Python 3.12, clone the repo, create the venv, `pip install -r Requirements.txt`.
+2. Fetch the raw CSVs into `archive/` from Kaggle (task `0.4` automates this).
+3. `python load_to_duckdb.py` to build `olist.duckdb`.
+4. `cd olist_dbt`, then `dbt debug` and `dbt build`.
+
+`profiles.yml` is committed, so there is no `~/.dbt/` setup step. The warehouse itself
+never travels through git — it is rebuilt from source data on every machine, which is the
+point of the project. Once task `0.5` lands, `dbt seed && dbt build` alone gives a working
+project and steps 2–3 become optional for a quick look.
+
 ## Commands
 
 Run dbt from **inside `olist_dbt/`** — `profiles.yml` lives there (not in `~/.dbt/`) and
@@ -181,8 +196,15 @@ other eight are task `1.1`.
 ## Working agreements
 
 - **Never commit or push unless asked.** The owner drives git.
-- **Never commit `archive/`, `olist.duckdb`, `target/`, `logs/`, or `.venv/`.** They are
-  gitignored for good reason; `geolocation` alone is 61 MB and would trip GitHub limits.
+- **Never commit `archive/`, `olist.duckdb`, `target/`, `logs/`, `.user.yml`, or
+  `.venv/`.** `geolocation` alone is 61 MB, and a database binary in git is a visible
+  negative signal in an analytics engineering portfolio.
+
+  History was rewritten on 2026-08-13 to purge exactly these: a committed `.venv/` (7,941
+  objects, including a 37 MB DuckDB binary) plus the raw CSVs and `olist.duckdb`, taking
+  the repo from 125 MB to 23 KB. Note that `.gitignore` does **not** untrack a file that
+  is already tracked — that is how they got in despite matching rules. Anyone holding a
+  clone from before that date must re-clone.
 - Before proposing a change to an existing model, read the model **and** its YAML.
 - When something fails, report the actual error output. Do not summarize a failure as a
   success or skip a step quietly.
