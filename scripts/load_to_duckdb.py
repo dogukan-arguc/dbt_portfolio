@@ -2,7 +2,7 @@
 import duckdb
 import pathlib
 
-DATA_DIR = pathlib.Path("archive")
+DATA_DIR = pathlib.Path("data/raw")
 DB_PATH = "olist.duckdb"
 
 con = duckdb.connect(DB_PATH)

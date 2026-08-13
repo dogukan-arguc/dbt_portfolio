@@ -1,5 +1,5 @@
 .venv/
-archive/
+olist_dbt/data
 *.duckdb
 *.duckdb.wal
 target/
