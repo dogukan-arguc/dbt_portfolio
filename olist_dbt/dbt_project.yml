@@ -35,6 +35,12 @@ models:
 snapshots:
   olist_dbt:
     +target_schema: snapshots
+
+
+seeds:
+  olist_dbt:
+    sample:
+      +schema: sample
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 

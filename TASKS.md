@@ -154,7 +154,7 @@ Goal: a clone-and-run repo on a clean, pinned environment.
   prerequisites — never commit the token.
   </details>
 
-- [ ] **0.5 Commit a sample dataset as seeds** ⭐ `[DEV]`
+- [x] **0.5 Commit a sample dataset as seeds** ⭐ `[DEV]`
 
   The full CSVs can't be committed (121 MB, `geolocation` alone is 61 MB). Instead commit
   a **referentially consistent ~1% sample** under `olist_dbt/seeds/` so anyone can
