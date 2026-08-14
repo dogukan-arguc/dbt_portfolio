@@ -22,3 +22,4 @@ for f in sorted(DATA_DIR.glob("*.csv")):
     print(f"{tbl:35s} {n:>10,}")
 
 con.close()
+print(f"{DB_PATH} created/updated with dataset {DATA_DIR}")

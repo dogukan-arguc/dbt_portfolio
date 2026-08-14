@@ -38,6 +38,7 @@ modelling layers are being built. See [`TASKS.md`](TASKS.md) for the full roadma
 
 - **Git**
 - A **Kaggle account**, to download the raw data.
+- A **Kaggle API Token** to download the raw data automatically.
 
 **You do not need to install Python yourself.** `.python-version` pins this project to
 3.12 and uv fetches that interpreter on demand. (For reference: the stack supports
@@ -69,16 +70,28 @@ uv run dbt --version
 ### 2. Get the raw data
 
 The CSVs are **not** in this repository: they total 121 MB, and a warehouse does not
-belong in version control. Download them yourself.
+belong in version control. Download them yourself or automatically with get_data.py
+
+#### Autmatic refresh
+
+0. get your api key it is completely free via your account. [kaggle api page](https://www.kaggle.com/settings/api)
+1. set your kaggle api key to **~.kaggle\kaggle.json** ({"username":"<username>","key":"<api_key>"})
+2. run this in **olist_dbt** folder (and it will also loads the data to the duckdb)
+
+```bash
+uv run python ..\scripts\get_data.py
+```
+
+#### OR GET DATA MANUALLY
 
 1. Open the [dataset page](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
    and click **Download** (Kaggle login required).
-2. Extract the archive into a folder named `archive/` at the repository root.
+2. Extract the archive into a folder named `data/raw/` at the repository root.
 
 You should end up with exactly nine CSVs:
 
 ```
-archive/
+data/raw/
 ├── olist_customers_dataset.csv
 ├── olist_geolocation_dataset.csv
 ├── olist_order_items_dataset.csv
@@ -90,7 +103,7 @@ archive/
 └── product_category_name_translation.csv
 ```
 
-`archive/` is gitignored, so nothing here will be committed.
+`data/raw/` is gitignored, so nothing here will be committed.
 
 ### 3. Build the warehouse
 

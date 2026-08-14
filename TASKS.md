@@ -121,7 +121,7 @@ Goal: a clone-and-run repo on a clean, pinned environment.
   taşınmış bir yola atıf yapmıyor.
   </details>
 
-- [ ] **0.4 Make data acquisition reproducible** `[DEV]`
+- [x] **0.4 Make data acquisition reproducible** `[DEV]`
 
   `archive/` is gitignored, so a fresh clone has no data. Write `scripts/get_data.py`
   (or document the manual steps) that pulls the Kaggle dataset into `archive/`, then
