@@ -217,7 +217,7 @@ Goal: a clone-and-run repo on a clean, pinned environment.
   </details>
   </details>
 
-- [ ] **0.6 Add packages** `[DEV]`
+- [x] **0.6 Add packages** `[DEV]`
 
   Create `packages.yml` with `dbt_utils`, `dbt_expectations`, `codegen`, and `dbt_date`.
   Run `uv run dbt deps`. Confirm `dbt_packages/` is gitignored but `package-lock.yml` is
@@ -261,7 +261,7 @@ Goal: every raw table declared, documented, and cleanly staged.
 temiz biçimde staging'e alınmış olsun.
 </details>
 
-- [ ] **1.1 Declare all nine sources** `[DEV]`
+- [x] **1.1 Declare all nine sources** `[DEV]`
 
   `_olist__sources.yml` currently declares only `orders`. Add the other eight with a
   `description:` each. Loader naming: `raw.order_items`, `raw.order_payments`,

@@ -8,6 +8,12 @@ sources:
     description: Kaggle Olist Brazilian E-Commerce dump
     tables:
       - name: orders
+        loaded_at_field: order_purchase_timestamp
+        freshness:
+          warn_after:
+            count: 1
+            period: day
+
         identifier: orders
         description: orders raw
         
