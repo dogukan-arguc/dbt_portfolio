@@ -9,3 +9,4 @@ sources:
     tables:
       - name: orders
         identifier: orders
+        description: orders table
