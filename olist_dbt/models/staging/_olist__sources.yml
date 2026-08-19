@@ -9,4 +9,36 @@ sources:
     tables:
       - name: orders
         identifier: orders
-        description: orders table
+        description: orders raw
+        
+      - name: customers
+        identifier: customers
+        description: customers raw
+
+      - name: order_items
+        identifier: order_items
+        description: items in orders raw
+      
+      - name: order_payments
+        identifier: order_payments
+        description: payments of the orders raw
+
+      - name: order_reviews
+        identifier: order_reviews
+        description: reviews of the orders raw
+
+      - name: products
+        identifier: products
+        description: products raw
+
+      - name: sellers
+        identifier: sellers
+        description: sellers raw
+
+      - name: product_category_name_translation
+        identifier: product_category_name_translation
+        description: translation of the products from BR to ENG
+
+      - name: geolocation
+        identifier: geolocation
+        description: geolocation for postal codes
