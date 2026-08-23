@@ -12,7 +12,7 @@ api.dataset_download_files(
 import subprocess
 import sys
 
-subprocess.run(
-    [sys.executable, "..\scripts\load_to_duckdb.py"],
-    check=True
-)
+from pathlib import Path
+
+script_path = Path(__file__).resolve().parent.parent / "scripts" / "load_to_duckdb.py"
+subprocess.run([sys.executable, str(script_path)], check=True)
