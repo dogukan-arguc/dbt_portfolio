@@ -281,7 +281,7 @@ temiz biçimde staging'e alınmış olsun.
   *Tamamlanma ölçütü:* `dbt ls --select source:olist` dokuz source listeliyor.
   </details>
 
-- [ ] **1.2 Source freshness** `[MONITOR]`
+- [x] **1.2 Source freshness** `[MONITOR]`
 
   Add `loaded_at_field` and `freshness` thresholds to `orders`. The data is a static
   2018 dump, so freshness will fail loudly — that's the lesson. Decide how to handle it:
@@ -302,7 +302,7 @@ temiz biçimde staging'e alınmış olsun.
   bilinçli bir tercih.
   </details>
 
-- [ ] **1.3 Build the staging layer** `[DEV]`
+- [x] **1.3 Build the staging layer** `[DEV]`
 
   One `stg_olist__<entity>.sql` per source. Rename to snake_case business names, cast
   types, trim strings, standardize casing. **No joins, no aggregation, no business logic.**
