@@ -1,12 +1,12 @@
 SELECT
-    product_id,
-    COALESCE(product_category_name,'unknown') as product_category_name ,
-    product_name_lenght as product_name_length,
-    product_description_lenght as product_description_length,
-    product_photos_qty,
-    product_weight_g,
-    product_length_cm,
-    product_height_cm,
-	product_width_cm
+    CAST(product_id AS VARCHAR) as product_id,
+    CAST(TRIM(product_category_name) AS VARCHAR) as product_category_name,
+    CAST(product_name_lenght AS SMALLINT) as product_name_length,
+    CAST(product_description_lenght AS INT) as product_description_length,
+    CAST(product_photos_qty AS SMALLINT) as product_photos_qty,
+    CAST(product_weight_g AS INT) as product_weight_g,
+    CAST(product_length_cm AS SMALLINT) as product_length_cm,
+    CAST(product_height_cm AS SMALLINT) as product_height_cm,
+	CAST(product_width_cm AS SMALLINT) as product_width_cm
 FROM
     {{ source("olist","products")}}

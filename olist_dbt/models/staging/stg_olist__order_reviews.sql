@@ -1,6 +1,6 @@
 SELECT
-    CAST(review_id AS VARCHAR(100)) as review_id,
-    CAST(order_id AS VARCHAR(100)) as order_id,
+    CAST(review_id AS VARCHAR) as review_id,
+    CAST(order_id AS VARCHAR) as order_id,
     CAST(review_score AS SMALLINT) as review_score,
     CAST(TRIM(review_comment_title) AS TEXT) as review_comment_title,
     CAST(review_comment_message AS TEXT) as review_comment_message,
