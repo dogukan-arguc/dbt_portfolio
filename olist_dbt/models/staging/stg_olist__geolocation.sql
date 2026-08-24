@@ -1,4 +1,4 @@
-WITH geolocation AS (
+WITH source AS (
     SELECT 
         *
     FROM 
@@ -13,7 +13,7 @@ renamed AS (
         CAST(TRIM(geolocation_city) AS VARCHAR) as geolocation_city,
         CAST(TRIM(geolocation_state) AS VARCHAR) as geolocation_state
     FROM
-        geolocation
+        source
 
 )
 
