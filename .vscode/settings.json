@@ -1,0 +1,12 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "DuckDB",
+            "database": "${workspaceFolder:dbt_portfolio}/olist_dbt/olist.duckdb",
+            "group": "DuckDB",
+            "name": "olist.duckdb"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}
