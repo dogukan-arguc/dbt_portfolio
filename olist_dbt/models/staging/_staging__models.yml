@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: stg_olist__customers
+    description: staging layer for customers table
+
+    columns: 
+      
+      - name: customer_id
+        description: "{{ doc('customer_id') }}"
+
+      - name: customer_unique_id
+        description: "{{ doc('customer_unique_id') }}"
+
+      - name: customer_zip_code_prefix
+        description: "{{ doc('customer_zip_code_prefix') }}"
+      
+      - name: customer_city
+        description: Customer's saved City
+      
+      - name: customer_state
+        description: Customer's saved State. It is valid for only Americas. Like TN, CH, LA etc.
+  
+
+  - name: stg_olist__geolocation
+    description: geolocations table for zip codes.
+
+    columns:
+
+      - name: geolocation_zip_code_prefix
+        description: "{{ doc('customer_zip_code_prefix') }}"
+
+      - name: geolocation_lat
+        description: Latitude of the geographic location
+
+      - name: geolocation_lng
+        description: Longitude of the geographic location
+
+      - name: geolocation_city
+        description: City of the geographic location
+
+      - name: geolocation_state
+        description: State of the geographic location
+  
+
+  - name: stg_olist__order_items
+    description: Every items of the orders Table
+
+    columns:
+
+      - name: order_id
+        description: "{{ doc('order_id') }}"

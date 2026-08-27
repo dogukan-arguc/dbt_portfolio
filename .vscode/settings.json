@@ -8,5 +8,6 @@
             "name": "olist.duckdb"
         }
     ],
-    "sqltools.useNodeRuntime": true
+    "sqltools.useNodeRuntime": true,
+    "markdown.validate.enabled": false
 }
