@@ -8,9 +8,14 @@ models:
       
       - name: customer_id
         description: "{{ doc('customer_id') }}"
+        tests:
+          - not_null
+          - unique
 
       - name: customer_unique_id
         description: "{{ doc('customer_unique_id') }}"
+        tests:
+          - not_null
 
       - name: customer_zip_code_prefix
         description: "{{ doc('customer_zip_code_prefix') }}"
@@ -29,6 +34,8 @@ models:
 
       - name: geolocation_zip_code_prefix
         description: "{{ doc('customer_zip_code_prefix') }}"
+        tests:
+          - not_null
 
       - name: geolocation_lat
         description: Latitude of the geographic location
@@ -50,6 +57,11 @@ models:
 
       - name: order_id
         description: "{{ doc('order_id') }}"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_olist__orders')
+              field: order_id
 
       - name: order_item_id
         description: Every item in the order have unique order_item_id in that order.
@@ -77,6 +89,10 @@ models:
 
       - name: order_id
         description: "{{ doc('order_id') }}" 
+        tests:
+          - relationships:
+              to: ref('stg_olist__orders')
+              field: order_id
 
       - name: payment_sequential
         description: Sequential identifier indicating the order of the payment within the payment lifecycle.
@@ -98,9 +114,16 @@ models:
 
       - name: review_id
         description: review identifier that customer did.
+        tests:
+          - unique
+          - not_null
 
       - name: order_id
         description: "{{ doc('order_id') }}"
+        tests:
+          - relationships:
+              to: ref('stg_olist__orders')
+              field: order_id
 
       - name: review_score
         description: score that customer gave to the order. It can be 1-6.
@@ -125,9 +148,16 @@ models:
 
       - name: order_id
         description: "{{ doc('order_id') }}"
+        tests:
+          - unique
+          - not_null
 
       - name: customer_id
         description: "{{ doc('customer_id') }}"
+        tests:
+          - relationships:
+              to: ref('stg_olist__customers')
+              field: customer_id
 
       - name: order_status
         description: The status of the order. It can be -> delivered, created, shipped, invoiced, unavailable, approved, processing, canceled.
@@ -166,7 +196,10 @@ models:
     columns:
 
       - name: product_id
-        description: "{{ doc('product_id') }}" 
+        description: "{{ doc('product_id') }}"
+        tests:
+          - unique
+          - not_null
 
       - name: product_category_name
         description: Category name.
