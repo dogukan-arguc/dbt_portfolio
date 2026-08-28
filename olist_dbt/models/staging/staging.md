@@ -23,3 +23,16 @@
     Unique ID of the order.
 
 {% enddocs %}
+
+{% docs product_id %}
+
+    A unique identifier representing the real-world product.
+
+{% enddocs %}
+
+{% docs seller_id %}
+
+    A unique identifier representing the real-world seller.
+
+{% enddocs %}
+

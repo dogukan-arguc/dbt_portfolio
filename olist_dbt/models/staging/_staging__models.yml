@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: stg_olist__customers
-    description: staging layer for customers table
+    description: staging layer for customers table.
 
     columns: 
       
@@ -16,7 +16,7 @@ models:
         description: "{{ doc('customer_zip_code_prefix') }}"
       
       - name: customer_city
-        description: Customer's saved City
+        description: Customer's saved City.
       
       - name: customer_state
         description: Customer's saved State. It is valid for only Americas. Like TN, CH, LA etc.
@@ -34,19 +34,178 @@ models:
         description: Latitude of the geographic location
 
       - name: geolocation_lng
-        description: Longitude of the geographic location
+        description: Longitude of the geographic location.
 
       - name: geolocation_city
-        description: City of the geographic location
+        description: City of the geographic location.
 
       - name: geolocation_state
-        description: State of the geographic location
+        description: State of the geographic location.
   
 
   - name: stg_olist__order_items
-    description: Every items of the orders Table
+    description: Every items of the orders Table.
 
     columns:
 
       - name: order_id
         description: "{{ doc('order_id') }}"
+
+      - name: order_item_id
+        description: Every item in the order have unique order_item_id in that order.
+
+      - name: product_id
+        description: "{{ doc('product_id') }}"
+
+      - name: seller_id
+        description: "{{ doc('seller_id') }}"
+
+      - name: shipping_limit_timestamp
+        description: Shipping limit of the order.
+
+      - name: order_item_price
+        description: Price of the product.
+
+      - name: order_item_freight_value
+        description: Freight value of the product.
+
+
+  - name: stg_olist__order_payments
+    description: Payments done of the orders.
+
+    columns:
+
+      - name: order_id
+        description: "{{ doc('order_id') }}" 
+
+      - name: payment_sequential
+        description: Sequential identifier indicating the order of the payment within the payment lifecycle.
+
+      - name: payment_type
+        description: credit_card / boleto / voucher / debit_card / not_defined
+      
+      - name: payment_installments
+        description: Installment number of the payment.
+
+      - name: payment_value
+        description: Total payment value.
+
+
+  - name: stg_olist__order_reviews
+    description: Reviews of the orders. Every customer can review hers/his order once.
+
+    columns:
+
+      - name: review_id
+        description: review identifier that customer did.
+
+      - name: order_id
+        description: "{{ doc('order_id') }}"
+
+      - name: review_score
+        description: score that customer gave to the order. It can be 1-6.
+
+      - name: review_comment_title
+        description: Review title.
+      
+      - name: review_comment_message
+        description: Review message of the customer.
+
+      - name: review_creation_date
+        description: Review creation date.
+
+      - name: review_answer_timestamp
+        description: Review answer from the seller if he/she answered. Othervise it is null.
+
+  
+  - name: stg_olist__orders
+    description: All orders table.
+
+    columns:
+
+      - name: order_id
+        description: "{{ doc('order_id') }}"
+
+      - name: customer_id
+        description: "{{ doc('customer_id') }}"
+
+      - name: order_status
+        description: The status of the order. It can be -> delivered, created, shipped, invoiced, unavailable, approved, processing, canceled.
+
+      - name: order_purchase_timestamp
+        description: order purchase exact time.
+
+      - name: order_approved_at_timestamp
+        description: order approval exact time.
+
+      - name: order_delivered_carrier_timestamp
+        description: Exact time of the carrier gets the order.
+
+      - name: order_delivered_customer_timestamp
+        description: Exact time of the customer gets the order.
+      
+      - name: order_estimated_delivery_date
+        description: Estimated delivery date to the customer.
+
+  
+  - name: stg_olist__product_category_name_translation
+    description: translation of the product categories from Spanish to English.
+    
+    columns:
+
+      - name: product_category_name
+        description: Category name
+
+      - name: product_category_name_english
+        description: Category name in English.
+
+
+  - name: stg_olist__products
+    description: all products in the system.
+
+    columns:
+
+      - name: product_id
+        description: "{{ doc('product_id') }}" 
+
+      - name: product_category_name
+        description: Category name.
+
+      - name: product_name_length
+        description: product name length.
+
+      - name: product_description_length
+        description: desc length.
+
+      - name: product_photos_qty
+        description: photo number of the product.
+
+      - name: product_weight_g
+        description: Gramage of the product weight.
+
+      - name: product_length_cm
+        description: length
+
+      - name: product_height_cm
+        description: height
+
+      - name: product_width_cm
+        description: width
+  
+
+  - name: stg_olist__sellers
+    description: all sellers.
+
+    columns:
+
+      - name: seller_id
+        description: "{{ doc('seller_id') }}"
+
+      - name: seller_zip_code_prefix
+        description: zip code of the seller
+
+      - name: seller_city
+        description: seller city
+      
+      - name: seller_state
+        description: state of the seller.
