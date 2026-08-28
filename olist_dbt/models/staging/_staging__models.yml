@@ -68,9 +68,17 @@ models:
 
       - name: product_id
         description: "{{ doc('product_id') }}"
+        tests:
+          - relationships:
+              to: ref('stg_olist__products')
+              field: product_id
 
       - name: seller_id
         description: "{{ doc('seller_id') }}"
+        tests:
+          - relationships:
+              to: ref('stg_olist__sellers')
+              field: seller_id
 
       - name: shipping_limit_timestamp
         description: Shipping limit of the order.
@@ -99,6 +107,8 @@ models:
 
       - name: payment_type
         description: credit_card / boleto / voucher / debit_card / not_defined
+        tests:
+          
       
       - name: payment_installments
         description: Installment number of the payment.
