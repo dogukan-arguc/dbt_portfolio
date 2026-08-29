@@ -8,13 +8,13 @@ models:
       
       - name: customer_id
         description: "{{ doc('customer_id') }}"
-        tests:
+        data_tests:
           - not_null
           - unique
 
       - name: customer_unique_id
         description: "{{ doc('customer_unique_id') }}"
-        tests:
+        data_tests:
           - not_null
 
       - name: customer_zip_code_prefix
@@ -34,7 +34,7 @@ models:
 
       - name: geolocation_zip_code_prefix
         description: "{{ doc('customer_zip_code_prefix') }}"
-        tests:
+        data_tests:
           - not_null
 
       - name: geolocation_lat
@@ -52,39 +52,52 @@ models:
 
   - name: stg_olist__order_items
     description: Every items of the orders Table.
-
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - order_id
+              - order_item_id
+          
     columns:
 
       - name: order_id
         description: "{{ doc('order_id') }}"
-        tests:
+        data_tests:
           - not_null
           - relationships:
-              to: ref('stg_olist__orders')
-              field: order_id
+              arguments:
+                to: ref('stg_olist__orders')
+                field: order_id
 
       - name: order_item_id
         description: Every item in the order have unique order_item_id in that order.
 
       - name: product_id
         description: "{{ doc('product_id') }}"
-        tests:
+        data_tests:
           - relationships:
-              to: ref('stg_olist__products')
-              field: product_id
+              arguments:
+                to: ref('stg_olist__products')
+                field: product_id
+          - not_null
 
       - name: seller_id
         description: "{{ doc('seller_id') }}"
-        tests:
+        data_tests:
           - relationships:
-              to: ref('stg_olist__sellers')
-              field: seller_id
+              arguments:
+                to: ref('stg_olist__sellers')
+                field: seller_id
+          - not_null
 
       - name: shipping_limit_timestamp
         description: Shipping limit of the order.
 
       - name: order_item_price
         description: Price of the product.
+        data_tests:
+          - not_null
 
       - name: order_item_freight_value
         description: Freight value of the product.
@@ -92,29 +105,46 @@ models:
 
   - name: stg_olist__order_payments
     description: Payments done of the orders.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - order_id
+              - payment_sequential
 
     columns:
 
       - name: order_id
         description: "{{ doc('order_id') }}" 
-        tests:
+        data_tests:
           - relationships:
-              to: ref('stg_olist__orders')
-              field: order_id
+              arguments:
+                to: ref('stg_olist__orders')
+                field: order_id
 
       - name: payment_sequential
         description: Sequential identifier indicating the order of the payment within the payment lifecycle.
 
       - name: payment_type
         description: credit_card / boleto / voucher / debit_card / not_defined
-        tests:
-          
+        data_tests:
+          - accepted_values:
+              arguments: 
+                values: ['credit_card','boleto','voucher','debit_card','not_defined']
+              config:
+                # not_defined's are all cancelled orders. (3 rows)
+                severity: error
       
       - name: payment_installments
         description: Installment number of the payment.
 
       - name: payment_value
         description: Total payment value.
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
 
 
   - name: stg_olist__order_reviews
@@ -124,19 +154,26 @@ models:
 
       - name: review_id
         description: review identifier that customer did.
-        tests:
-          - unique
+        data_tests:
+          - unique: # This is duplicated rows. A customer can't send 2 reviews at the same exact time theorically.
+              config:
+                severity: warn
           - not_null
 
       - name: order_id
         description: "{{ doc('order_id') }}"
-        tests:
+        data_tests:
           - relationships:
-              to: ref('stg_olist__orders')
-              field: order_id
+              arguments:
+                to: ref('stg_olist__orders')
+                field: order_id
 
       - name: review_score
-        description: score that customer gave to the order. It can be 1-6.
+        description: score that customer gave to the order. It can be 1-5.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1,2,3,4,5]
 
       - name: review_comment_title
         description: Review title.
@@ -158,19 +195,23 @@ models:
 
       - name: order_id
         description: "{{ doc('order_id') }}"
-        tests:
+        data_tests:
           - unique
           - not_null
 
       - name: customer_id
         description: "{{ doc('customer_id') }}"
-        tests:
+        data_tests:
           - relationships:
               to: ref('stg_olist__customers')
               field: customer_id
 
       - name: order_status
         description: The status of the order. It can be -> delivered, created, shipped, invoiced, unavailable, approved, processing, canceled.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["delivered", "created", "shipped", "invoiced", "unavailable", "approved", "processing", "canceled"]
 
       - name: order_purchase_timestamp
         description: order purchase exact time.
@@ -189,12 +230,15 @@ models:
 
   
   - name: stg_olist__product_category_name_translation
-    description: translation of the product categories from Spanish to English.
+    description: translation of the product categories from Portaguese to English.
     
     columns:
 
       - name: product_category_name
         description: Category name
+        data_tests:
+          - unique
+          - not_null
 
       - name: product_category_name_english
         description: Category name in English.
@@ -207,12 +251,22 @@ models:
 
       - name: product_id
         description: "{{ doc('product_id') }}"
-        tests:
+        data_tests:
           - unique
           - not_null
 
       - name: product_category_name
         description: Category name.
+        data_tests:
+          - relationships:
+              arguments: # no translation for pc_gamer etc
+                to: ref('stg_olist__product_category_name_translation')
+                field: product_category_name
+              config:
+                severity: warn
+          - not_null:
+              config:
+                severity: warn
 
       - name: product_name_length
         description: product name length.
@@ -222,6 +276,11 @@ models:
 
       - name: product_photos_qty
         description: photo number of the product.
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
 
       - name: product_weight_g
         description: Gramage of the product weight.
@@ -243,6 +302,9 @@ models:
 
       - name: seller_id
         description: "{{ doc('seller_id') }}"
+        data_tests:
+          - unique
+          - not_null
 
       - name: seller_zip_code_prefix
         description: zip code of the seller
