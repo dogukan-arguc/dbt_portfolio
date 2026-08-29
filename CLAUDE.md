@@ -51,6 +51,10 @@ there. Escalate only when he asks again.
 `description:` fields, `README.md`, dbt docs, commit messages, `TASKS.md`. The repo is
 read internationally.
 
+The one exception is `TASKS.tr.md`, a section-by-section Turkish mirror of the roadmap.
+It carries no checkboxes: progress lives in `TASKS.md` alone, so the two files can never
+disagree about what is done. Edit both when a task's wording changes.
+
 Chat conversation with the owner is in **Turkish**.
 
 ## Environment
@@ -126,6 +130,7 @@ VS Code extension. Close it. For read-only inspection always connect with
 dbt_portfolio/
 ├── CLAUDE.md              # this file
 ├── TASKS.md               # the roadmap — the owner's working document
+├── TASKS.tr.md            # Turkish mirror of the roadmap — no checkboxes
 ├── README.md              # setup guide; becomes the portfolio front door in phase 8
 ├── pyproject.toml         # dependency declarations
 ├── uv.lock                # resolved versions — committed
@@ -220,3 +225,8 @@ other eight are task `1.1`.
   success or skip a step quietly.
 - `TASKS.md` is the source of truth for scope and sequencing. When a task is finished,
   the owner ticks the box — offer to, but do not tick it for him.
+- **Never round-trip a Markdown file through a WYSIWYG or preview-based editor.** Commit
+  `8aec9e8` did exactly that to `TASKS.md`: hard wraps collapsed into single 1,200-character
+  lines, `**bold**` and backticks inside the raw-HTML blocks were stripped, 14 nested
+  `<details>` toggles were flattened into the surrounding paragraph, and the newlines they
+  were joined at lost their spaces. Edit these files as plain text only.
