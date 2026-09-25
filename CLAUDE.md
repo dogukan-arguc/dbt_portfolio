@@ -84,24 +84,34 @@ environment is known to be active.
 
 ### Working from another machine
 
-A fresh clone is code only — no `archive/`, no `olist.duckdb`, no `.venv/`. Nothing
-machine-specific is committed, so the sequence is always:
+A fresh clone is code only — no `olist_dbt/data/`, no `olist.duckdb`, no `.venv/`.
+Nothing machine-specific is committed, so the sequence is always:
 
 1. Install uv, clone the repo, run `uv sync`. Python itself comes from uv — there is no
    separate interpreter install step.
-2. Fetch the raw CSVs into `archive/` from Kaggle (task `0.4` automates this).
-3. `uv run python load_to_duckdb.py` to build `olist.duckdb`.
-4. `cd olist_dbt`, then `uv run dbt debug` and `uv run dbt build`.
+2. `cd olist_dbt`, then `uv run dbt deps` and `uv run dbt debug`.
+3. `uv run dbt seed && uv run dbt build`. The committed seeds are meant to carry this on
+   their own — no CSV download, no loader (task `0.5`).
 
-`profiles.yml` is committed, so there is no `~/.dbt/` setup step. The warehouse itself
-never travels through git — it is rebuilt from source data on every machine, which is the
-point of the project. Once task `0.5` lands, `dbt seed && dbt build` alone gives a working
-project and steps 2–3 become optional for a quick look.
+For the full ~100k-order dataset, add the raw-CSV step before building. Both scripts
+resolve `data/raw` and `olist.duckdb` relative to the **current directory**, so they must
+be run from inside `olist_dbt/`, not from the repo root:
+
+```bash
+cd olist_dbt
+uv run python ../scripts/get_data.py        # Kaggle -> data/raw, then loads it
+uv run python ../scripts/load_to_duckdb.py  # data/raw -> raw.* in olist.duckdb
+```
+
+`profiles.yml` is committed, so there is no `~/.dbt/` setup step. Neither the raw CSVs nor
+`olist.duckdb` ever travels through git — the warehouse is rebuilt from source data on
+every machine, which is the point of the project.
 
 ## Commands
 
 Run dbt from **inside `olist_dbt/`** — `profiles.yml` lives there (not in `~/.dbt/`) and
-points at `../olist.duckdb` by relative path. Running from the repo root will not resolve.
+points at `./olist.duckdb`: the warehouse sits next to it, inside `olist_dbt/`. Running
+from the repo root will not resolve.
 
 ```bash
 cd olist_dbt
@@ -113,10 +123,12 @@ uv run dbt test --select source:olist     # source freshness / source tests
 uv run dbt docs generate      # then: uv run dbt docs serve
 ```
 
-Reload raw data from CSV (from repo root):
+Reload raw data from CSV (**from inside `olist_dbt/`** — the paths inside the script are
+relative to the working directory, not to the script file):
 
 ```bash
-uv run python load_to_duckdb.py
+cd olist_dbt
+uv run python ../scripts/load_to_duckdb.py
 ```
 
 **DuckDB single-writer lock:** DuckDB allows one writer at a time. If `dbt` fails with a
@@ -135,20 +147,25 @@ dbt_portfolio/
 ├── pyproject.toml         # dependency declarations
 ├── uv.lock                # resolved versions — committed
 ├── .python-version        # 3.12
-├── load_to_duckdb.py      # CSV -> raw schema loader
-├── ui.py                  # DuckDB web UI launcher (holds a write lock!)
-├── archive/               # 9 Kaggle CSVs, 121 MB — GITIGNORED
-├── olist.duckdb           # the warehouse — GITIGNORED
-└── olist_dbt/             # the dbt project
+├── scripts/
+│   ├── get_data.py        # Kaggle download -> data/raw, then calls the loader
+│   ├── load_to_duckdb.py  # CSV -> raw schema loader
+│   └── ui.py              # DuckDB web UI launcher (holds a write lock!)
+└── olist_dbt/             # the dbt project — run every dbt command from here
     ├── dbt_project.yml
-    ├── profiles.yml       # in-repo, points at ../olist.duckdb
+    ├── profiles.yml       # in-repo, points at ./olist.duckdb
+    ├── packages.yml       # + package-lock.yml, both committed
+    ├── olist.duckdb       # the warehouse, 52 MB — GITIGNORED
+    ├── data/raw/          # 9 Kaggle CSVs, 121 MB — GITIGNORED
     ├── models/
     │   ├── staging/
     │   ├── intermediate/
     │   └── marts/
     ├── macros/
     │   └── generate_schema_name.sql
-    ├── seeds/             # committed sample data (task 0.5)
+    ├── seeds/             # COMMITTED — see "Two CSV sets" below
+    │   ├── product_category_name_translation.csv
+    │   └── sample/        # referentially consistent subset (task 0.5)
     ├── snapshots/
     └── tests/
 ```
@@ -156,11 +173,36 @@ dbt_portfolio/
 ## Data
 
 Source: [Kaggle — Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce).
-~100k orders, 2016-09 to 2018-10. `load_to_duckdb.py` strips the `olist_` prefix and
-`_dataset` suffix, so `archive/olist_order_items_dataset.csv` lands as `raw.order_items`.
+~100k orders, 2016-09 to 2018-10. `scripts/load_to_duckdb.py` strips the `olist_` prefix
+and `_dataset` suffix, so `olist_dbt/data/raw/olist_order_items_dataset.csv` lands as
+`raw.order_items`.
 
 Nine tables in schema `raw`: `orders`, `order_items`, `order_payments`, `order_reviews`,
 `customers`, `sellers`, `products`, `geolocation`, `product_category_name_translation`.
+
+### Two CSV sets — do not confuse them
+
+The repo holds CSVs in two places, and they serve opposite purposes.
+
+| | `olist_dbt/data/raw/` | `olist_dbt/seeds/` |
+| --- | --- | --- |
+| In git | no — gitignored, 121 MB | **yes, committed** |
+| Loaded by | `scripts/load_to_duckdb.py` | `dbt seed` |
+| Lands in | schema `raw`, reached via `source()` | target schema / `sample`, reached via `ref()` |
+| Contents | the full nine Kaggle files | `product_category_name_translation.csv`, plus eight files under `sample/` |
+| Purpose | local development against real volume | a clone that builds with zero setup, and CI where the CSVs are unavailable |
+
+`seeds/product_category_name_translation.csv` sits at the seed root, so it builds into the
+target schema. The eight files under `seeds/sample/` pick up `+schema: sample` from
+`dbt_project.yml` and hold ~5k orders with their child rows kept referentially consistent.
+
+Two consequences worth knowing before touching either:
+
+- The category translation exists **twice** — as a seed and as
+  `raw.product_category_name_translation`. Staging currently reads the source, not the seed.
+- There is no switch yet between seeds and `raw`: sources point at `raw` unconditionally,
+  so nothing `ref`s the sample seeds. That switch is what a CSV-less clone needs in order
+  to build.
 
 ### Traps in this dataset — do not let these slide
 
@@ -205,15 +247,15 @@ outside a staging import CTE.
 intentional — do not "fix" it.
 
 **Sources.** `_olist__sources.yml` sets `database: olist` because DuckDB derives the
-catalog name from the filename `olist.duckdb`. Only `orders` is declared so far; the
-other eight are task `1.1`.
+catalog name from the filename `olist.duckdb`. All nine tables are declared.
 
 ## Working agreements
 
 - **Never commit or push unless asked.** The owner drives git.
-- **Never commit `archive/`, `olist.duckdb`, `target/`, `logs/`, `.user.yml`, or
-  `.venv/`.** `geolocation` alone is 61 MB, and a database binary in git is a visible
-  negative signal in an analytics engineering portfolio.
+- **Never commit `olist_dbt/data/`, `olist.duckdb`, `target/`, `dbt_packages/`, `logs/`,
+  `.user.yml`, or `.venv/`.** `geolocation` alone is 61 MB, and a database binary in git is
+  a visible negative signal in an analytics engineering portfolio. The seeds under
+  `olist_dbt/seeds/` are the deliberate exception — they are committed on purpose.
 
   History was rewritten on 2026-08-13 to purge exactly these: a committed `.venv/` (7,941
   objects, including a 37 MB DuckDB binary) plus the raw CSVs and `olist.duckdb`, taking
