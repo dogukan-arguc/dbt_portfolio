@@ -93,16 +93,14 @@ models:
 
       - name: shipping_limit_timestamp
         description: Shipping limit of the order.
+        data_tests:
+          - assert_no_future_dates
 
       - name: order_item_price
         description: Price of the product.
         data_tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_be_between:
-              arguments:
-                min_value: 0
-                strictly: true
-              
+          - is_positive
 
       - name: order_item_freight_value
         description: Freight value of the product.
@@ -195,9 +193,13 @@ models:
 
       - name: review_creation_date
         description: Review creation date.
+        data_tests:
+          - assert_no_future_dates
 
       - name: review_answer_timestamp
         description: Review answer from the seller if he/she answered. Othervise it is null.
+        data_tests:
+          - assert_no_future_dates
 
   
   - name: stg_olist__orders
@@ -227,16 +229,24 @@ models:
 
       - name: order_purchase_timestamp
         description: order purchase exact time.
+        data_tests:
+          - assert_no_future_dates
 
       - name: order_approved_at_timestamp
         description: order approval exact time.
+        data_tests:
+          - assert_no_future_dates
 
       - name: order_delivered_carrier_timestamp
         description: Exact time of the carrier gets the order.
+        data_tests:
+          - assert_no_future_dates
 
       - name: order_delivered_customer_timestamp
         description: Exact time of the customer gets the order.
-      
+        data_tests:
+          - assert_no_future_dates
+
       - name: order_estimated_delivery_date
         description: Estimated delivery date to the customer.
 
