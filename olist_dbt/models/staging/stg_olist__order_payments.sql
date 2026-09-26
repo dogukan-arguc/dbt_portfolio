@@ -11,7 +11,7 @@ renamed AS (
         CAST(payment_sequential AS SMALLINT) as payment_sequential,
         CAST(TRIM(payment_type) AS VARCHAR) as payment_type,
         CAST(payment_installments AS SMALLINT) as payment_installments,
-        CAST(payment_value AS DOUBLE) as payment_value
+        CAST(payment_value AS DECIMAL(12,2)) as payment_value
     FROM
         source
 )
