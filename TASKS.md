@@ -5,10 +5,17 @@ goal and a *definition of done* — not a solution. Hints are collapsed; open on
 you've been stuck for a while. For deeper help, ask Claude and say what hint level you
 want (nudge → approach → skeleton → code).
 
+**Progress is tracked on GitHub, not in this file.** Every task below links to its issue;
+the issue's state is the single source of truth for whether it is done, and the
+[Olist dbt Roadmap](https://github.com/users/dogukan-arguc/projects/1) board shows all of
+them at once. Each phase is a milestone and each cert tag is a label. A task is closed by
+the commit or pull request that finishes it (`Closes #17`), which ties the work to the
+code. This file stays the design document: the *what*, the *why*, and the definition of
+done.
+
 A Turkish translation of this roadmap lives in [`TASKS.tr.md`](TASKS.tr.md), section by
-section. Progress is tracked here and only here — the checkboxes below are the single
-source of truth. Technical terms are deliberately left in English there too: the dbt docs
-and the certification exam use them, so learning them in English is part of the work.
+section. Technical terms are deliberately left in English there too: the dbt docs and the
+certification exam use them, so learning them in English is part of the work.
 
 **Cert tags** map each task to a dbt Analytics Engineering Certification exam domain:
 `[DEV]` developing models · `[DEBUG]` debugging · `[TEST]` testing · `[MONITOR]`
@@ -25,7 +32,7 @@ are what make a hiring manager stop scrolling.
 
 Goal: a clone-and-run repo on a clean, pinned environment.
 
-- [x] **0.1 Set up the environment with uv** `[DEV]`
+- **0.1 Set up the environment with uv** `[DEV]` · [#8](https://github.com/dogukan-arguc/dbt_portfolio/issues/8)
 
   `pyproject.toml` declares the dependencies, `.python-version` pins Python 3.12, and
   `uv.lock` is committed. `uv sync` builds `.venv/` from the lock, fetching the
@@ -34,7 +41,7 @@ Goal: a clone-and-run repo on a clean, pinned environment.
   *Done when:* `uv run dbt --version` reports dbt-core 1.10.x with the duckdb adapter
   listed. ✅ dbt-core 1.10.23, duckdb 1.10.1.
 
-- [x] **0.2 Verify the connection** `[DEBUG]`
+- **0.2 Verify the connection** `[DEBUG]` · [#9](https://github.com/dogukan-arguc/dbt_portfolio/issues/9)
 
   Run `uv run dbt debug` from inside `olist_dbt/`. Understand *why* it must be run from
   there. ✅ All checks passed.
@@ -48,7 +55,7 @@ Goal: a clone-and-run repo on a clean, pinned environment.
   it is relative to that same directory.
   </details>
 
-- [x] **0.3 Repo hygiene** `[DEV]`
+- **0.3 Repo hygiene** `[DEV]` · [#10](https://github.com/dogukan-arguc/dbt_portfolio/issues/10)
 
   Decide the final top-level structure. Two open items:
 
@@ -61,7 +68,7 @@ Goal: a clone-and-run repo on a clean, pinned environment.
   *Done when:* the root holds only files that earn their place, and no doc references a
   path that moved.
 
-- [x] **0.4 Make data acquisition reproducible** `[DEV]`
+- **0.4 Make data acquisition reproducible** `[DEV]` · [#11](https://github.com/dogukan-arguc/dbt_portfolio/issues/11)
 
   `archive/` is gitignored, so a fresh clone has no data. Write `scripts/get_data.py`
   (or document the manual steps) that pulls the Kaggle dataset into `archive/`, then
@@ -77,7 +84,7 @@ Goal: a clone-and-run repo on a clean, pinned environment.
   prerequisites — never commit the token.
   </details>
 
-- [x] **0.5 Commit a sample dataset as seeds** ⭐ `[DEV]`
+- **0.5 Commit a sample dataset as seeds** ⭐ `[DEV]` · [#12](https://github.com/dogukan-arguc/dbt_portfolio/issues/12)
 
   The full CSVs can't be committed (121 MB, `geolocation` alone is 61 MB). Instead commit
   a **referentially consistent ~1% sample** under `olist_dbt/seeds/` so anyone can
@@ -107,7 +114,7 @@ Goal: a clone-and-run repo on a clean, pinned environment.
   </details>
   </details>
 
-- [x] **0.6 Add packages** `[DEV]`
+- **0.6 Add packages** `[DEV]` · [#13](https://github.com/dogukan-arguc/dbt_portfolio/issues/13)
 
   Create `packages.yml` with `dbt_utils`, `dbt_expectations`, `codegen`, and `dbt_date`.
   Run `uv run dbt deps`. Confirm `dbt_packages/` is gitignored but `package-lock.yml` is
@@ -128,7 +135,7 @@ Goal: a clone-and-run repo on a clean, pinned environment.
 
 Goal: every raw table declared, documented, and cleanly staged.
 
-- [x] **1.1 Declare all nine sources** `[DEV]`
+- **1.1 Declare all nine sources** `[DEV]` · [#14](https://github.com/dogukan-arguc/dbt_portfolio/issues/14)
 
   `_olist__sources.yml` currently declares only `orders`. Add the other eight with a
   `description:` each. Loader naming: `raw.order_items`, `raw.order_payments`,
@@ -137,7 +144,7 @@ Goal: every raw table declared, documented, and cleanly staged.
 
   *Done when:* `dbt ls --select source:olist` lists nine sources.
 
-- [x] **1.2 Source freshness** `[MONITOR]`
+- **1.2 Source freshness** `[MONITOR]` · [#15](https://github.com/dogukan-arguc/dbt_portfolio/issues/15)
 
   Add `loaded_at_field` and `freshness` thresholds to `orders`. The data is a static
   2018 dump, so freshness will fail loudly — that's the lesson. Decide how to handle it:
@@ -147,7 +154,7 @@ Goal: every raw table declared, documented, and cleanly staged.
   *Done when:* `dbt source freshness` runs and its result is a deliberate outcome you can
   justify, not an accident.
 
-- [x] **1.3 Build the staging layer** `[DEV]`
+- **1.3 Build the staging layer** `[DEV]` · [#16](https://github.com/dogukan-arguc/dbt_portfolio/issues/16)
 
   One `stg_olist__<entity>.sql` per source. Rename to snake_case business names, cast
   types, trim strings, standardize casing. **No joins, no aggregation, no business logic.**
@@ -165,7 +172,7 @@ Goal: every raw table declared, documented, and cleanly staged.
   raw and staged obvious to a reviewer.
   </details>
 
-- [ ] **1.4 Handle the category translation** `[DEV]`
+- **1.4 Handle the category translation** `[DEV]` · [#17](https://github.com/dogukan-arguc/dbt_portfolio/issues/17)
 
   `product_category_name_translation` is 2.6 KB of static lookup data. Argue whether it
   belongs as a source or as a **seed**, then implement your choice.
@@ -173,7 +180,7 @@ Goal: every raw table declared, documented, and cleanly staged.
   *Done when:* English category names are available downstream and your README or model
   description records the reasoning.
 
-- [ ] **1.5 Document the staging layer** `[DEV]`
+- **1.5 Document the staging layer** `[DEV]` · [#18](https://github.com/dogukan-arguc/dbt_portfolio/issues/18)
 
   `_staging__models.yml` with a `description:` on every model and every column. Use
   `{{ doc(...) }}` blocks in a `.md` file for anything you repeat (e.g. what
@@ -187,7 +194,7 @@ Goal: every raw table declared, documented, and cleanly staged.
 
 Goal: tests that would actually catch a regression, not decoration.
 
-- [ ] **2.1 Baseline generic tests** `[TEST]`
+- **2.1 Baseline generic tests** `[TEST]` · [#19](https://github.com/dogukan-arguc/dbt_portfolio/issues/19)
 
   `unique` + `not_null` on every primary key, `relationships` on every foreign key,
   `accepted_values` on `order_status` and `payment_type`.
@@ -199,7 +206,7 @@ Goal: tests that would actually catch a regression, not decoration.
   *Done when:* `dbt test` is green *and* every test you weakened or removed has a comment
   explaining what you found.
 
-- [ ] **2.2 Composite key tests** `[TEST]`
+- **2.2 Composite key tests** `[TEST]` · [#20](https://github.com/dogukan-arguc/dbt_portfolio/issues/20)
 
   `order_items` is keyed on `(order_id, order_item_id)` and `order_payments` on
   `(order_id, payment_sequential)`. A single-column `unique` test can't express that.
@@ -213,7 +220,7 @@ Goal: tests that would actually catch a regression, not decoration.
   downstream. Consider doing both.
   </details>
 
-- [ ] **2.3 dbt_expectations tests** `[TEST]`
+- **2.3 dbt_expectations tests** `[TEST]` · [#21](https://github.com/dogukan-arguc/dbt_portfolio/issues/21)
 
   Add value-range and distribution tests where they express a real business rule:
   `price > 0`, `review_score` between 1 and 5, `payment_installments` within a sane
@@ -221,7 +228,7 @@ Goal: tests that would actually catch a regression, not decoration.
 
   *Done when:* at least six expectation-style tests exist and each maps to a stated rule.
 
-- [ ] **2.4 Write a custom generic test** `[TEST]`
+- **2.4 Write a custom generic test** `[TEST]` · [#22](https://github.com/dogukan-arguc/dbt_portfolio/issues/22)
 
   A test in `tests/generic/` that takes arguments and can be applied from YAML. Good
   candidate: `assert_no_future_dates`, or a positive-value test that permits a documented
@@ -229,7 +236,7 @@ Goal: tests that would actually catch a regression, not decoration.
 
   *Done when:* the test lives in YAML on at least two models.
 
-- [ ] **2.5 Singular tests for the real traps** ⭐ `[TEST]`
+- **2.5 Singular tests for the real traps** ⭐ `[TEST]` · [#23](https://github.com/dogukan-arguc/dbt_portfolio/issues/23)
 
   These are the tests that prove you understood the data:
 
@@ -242,7 +249,7 @@ Goal: tests that would actually catch a regression, not decoration.
   *Done when:* three singular tests exist in `tests/`, and you can explain what production
   bug each would catch.
 
-- [ ] **2.6 Unit tests** ⭐ `[TEST]`
+- **2.6 Unit tests** ⭐ `[TEST]` · [#24](https://github.com/dogukan-arguc/dbt_portfolio/issues/24)
 
   dbt 1.8+ `unit_tests:` — fixed input rows, asserted output rows, no warehouse data
   needed. Almost no portfolio project has these. Apply to your most logic-heavy model
@@ -258,7 +265,7 @@ Goal: tests that would actually catch a regression, not decoration.
   `dbt test --select test_type:unit`.
   </details>
 
-- [ ] **2.7 Test configuration** `[TEST]` `[MONITOR]`
+- **2.7 Test configuration** `[TEST]` `[MONITOR]` · [#25](https://github.com/dogukan-arguc/dbt_portfolio/issues/25)
 
   Use `severity: warn` where a failure is informational, `error_if`/`warn_if` thresholds
   where a small number of bad rows is tolerable, and `store_failures: true` on the tests
@@ -272,7 +279,7 @@ Goal: tests that would actually catch a regression, not decoration.
 
 Goal: a dimensional model a BI tool can sit on without further transformation.
 
-- [ ] **3.1 Resolve the payment fan-out** `[DEV]`
+- **3.1 Resolve the payment fan-out** `[DEV]` · [#26](https://github.com/dogukan-arguc/dbt_portfolio/issues/26)
 
   `order_payments` has multiple rows per order. Build an intermediate model at **one row
   per order** carrying total paid, installment count, and a breakdown by payment type.
@@ -286,14 +293,14 @@ Goal: a dimensional model a BI tool can sit on without further transformation.
   the distinct values if you'd rather not hardcode.
   </details>
 
-- [ ] **3.2 Order items enriched** `[DEV]`
+- **3.2 Order items enriched** `[DEV]` · [#27](https://github.com/dogukan-arguc/dbt_portfolio/issues/27)
 
   Join items to products (with English categories) and sellers. Stays at line-item grain.
 
   *Done when:* row count is unchanged from `stg_olist__order_items` — a join that changes
   the row count is a bug.
 
-- [ ] **3.3 `dim_customers`** ⭐ `[DEV]`
+- **3.3 `dim_customers`** ⭐ `[DEV]` · [#28](https://github.com/dogukan-arguc/dbt_portfolio/issues/28)
 
   The headline trap. `customer_id` is one row per order; `customer_unique_id` is the
   actual person. Build the dimension at the **person** grain with first/last order date,
@@ -302,14 +309,14 @@ Goal: a dimensional model a BI tool can sit on without further transformation.
   *Done when:* the row count is materially lower than `stg_olist__customers`, and the
   model description explains the `customer_id` vs `customer_unique_id` distinction.
 
-- [ ] **3.4 `dim_products` and `dim_sellers`** `[DEV]`
+- **3.4 `dim_products` and `dim_sellers`** `[DEV]` · [#29](https://github.com/dogukan-arguc/dbt_portfolio/issues/29)
 
   English categories, null category handled explicitly (an `'unknown'` bucket beats a
   null), physical dimensions cleaned.
 
   *Done when:* both build with full column-level docs.
 
-- [ ] **3.5 `dim_geolocation`** `[DEV]`
+- **3.5 `dim_geolocation`** `[DEV]` · [#30](https://github.com/dogukan-arguc/dbt_portfolio/issues/30)
 
   61 MB, many noisy rows per zip prefix, inconsistent accented city names. Reduce to one
   row per `zip_code_prefix` with a representative coordinate and a canonical city name.
@@ -323,7 +330,7 @@ Goal: a dimensional model a BI tool can sit on without further transformation.
   to strip accents for the city name and whether that's lossy.
   </details>
 
-- [ ] **3.6 `dim_date`** `[DEV]`
+- **3.6 `dim_date`** `[DEV]` · [#31](https://github.com/dogukan-arguc/dbt_portfolio/issues/31)
 
   A date spine covering the dataset's range with the usual calendar attributes, plus
   Brazilian public holidays if you want to go further (holidays visibly move e-commerce
@@ -337,7 +344,7 @@ Goal: a dimensional model a BI tool can sit on without further transformation.
   Generating your own is the better learning exercise.
   </details>
 
-- [ ] **3.7 `fct_orders`** `[DEV]`
+- **3.7 `fct_orders`** `[DEV]` · [#32](https://github.com/dogukan-arguc/dbt_portfolio/issues/32)
 
   One row per order. Foreign keys to every dimension, plus measures: item count, product
   revenue, freight, total paid, review score. Add the delivery timing measures —
@@ -346,14 +353,14 @@ Goal: a dimensional model a BI tool can sit on without further transformation.
   *Done when:* one row per order, all FKs pass `relationships` tests, and revenue
   reconciles with the phase 2.5 test.
 
-- [ ] **3.8 `fct_order_items`** `[DEV]`
+- **3.8 `fct_order_items`** `[DEV]` · [#33](https://github.com/dogukan-arguc/dbt_portfolio/issues/33)
 
   Line-item grain with a surrogate key. Allocate order-level payment amounts down to the
   line proportionally — and be able to defend the allocation rule.
 
   *Done when:* allocated amounts sum back to the order total within tolerance.
 
-- [ ] **3.9 Analytical marts** ⭐ `[DEV]`
+- **3.9 Analytical marts** ⭐ `[DEV]` · [#34](https://github.com/dogukan-arguc/dbt_portfolio/issues/34)
 
   This is where you show analytics judgment rather than plumbing. Build at least three:
 
@@ -378,7 +385,7 @@ Goal: a dimensional model a BI tool can sit on without further transformation.
 Goal: prove you can handle production patterns — not just rebuild everything nightly.
 This phase is the biggest single differentiator in the project.
 
-- [ ] **4.1 Build a simulated ingestion clock** ⭐ `[DEV]`
+- **4.1 Build a simulated ingestion clock** ⭐ `[DEV]` · [#35](https://github.com/dogukan-arguc/dbt_portfolio/issues/35)
 
   The problem: Olist is a static 2018 dump, so incremental models and snapshots are
   meaningless theater on it. The fix: `scripts/simulate_load.py --as-of YYYY-MM-DD` that
@@ -400,7 +407,7 @@ This phase is the biggest single differentiator in the project.
   have passed. That backwards walk *is* the exercise.
   </details>
 
-- [ ] **4.2 Incremental `fct_order_items`** `[DEV]` `[DEBUG]`
+- **4.2 Incremental `fct_order_items`** `[DEV]` `[DEBUG]` · [#36](https://github.com/dogukan-arguc/dbt_portfolio/issues/36)
 
   Convert to `materialized: incremental` with a `unique_key` and an `is_incremental()`
   filter. Test it properly with the clock from 4.1: full refresh at an early date, then
@@ -409,7 +416,7 @@ This phase is the biggest single differentiator in the project.
   *Done when:* incremental output matches full-refresh output exactly, and you've
   understood the `on_schema_change` options.
 
-- [ ] **4.3 Handle late-arriving data** ⭐ `[DEV]`
+- **4.3 Handle late-arriving data** ⭐ `[DEV]` · [#37](https://github.com/dogukan-arguc/dbt_portfolio/issues/37)
 
   A naive `where updated_at > (select max(...) from {{ this }})` silently drops records
   that arrive out of order. Add a lookback window and show that it recovers rows a naive
@@ -417,7 +424,7 @@ This phase is the biggest single differentiator in the project.
 
   *Done when:* you can demonstrate the failure case, then the fix.
 
-- [ ] **4.4 Snapshot order status (SCD2)** ⭐ `[DEV]`
+- **4.4 Snapshot order status (SCD2)** ⭐ `[DEV]` · [#38](https://github.com/dogukan-arguc/dbt_portfolio/issues/38)
 
   Snapshot `orders` on `order_status` with the `check` strategy. Advance the clock across
   several dates, snapshotting each time, and build the SCD2 history of orders moving
@@ -426,7 +433,7 @@ This phase is the biggest single differentiator in the project.
   *Done when:* the snapshot table holds multiple versions of the same `order_id` with
   correct `dbt_valid_from` / `dbt_valid_to`.
 
-- [ ] **4.5 Build a status-duration model on the snapshot** `[DEV]`
+- **4.5 Build a status-duration model on the snapshot** `[DEV]` · [#39](https://github.com/dogukan-arguc/dbt_portfolio/issues/39)
 
   Use the SCD2 history to measure how long orders sit in each status — which is a real
   operational metric you *cannot* compute from the static dump. This is the payoff for
@@ -434,7 +441,7 @@ This phase is the biggest single differentiator in the project.
 
   *Done when:* average duration per status transition is queryable.
 
-- [ ] **4.6 Ephemeral models and a custom macro** `[DEV]`
+- **4.6 Ephemeral models and a custom macro** `[DEV]` · [#40](https://github.com/dogukan-arguc/dbt_portfolio/issues/40)
 
   Use `materialized: ephemeral` where a model is pure plumbing, and inspect the compiled
   SQL to see it inlined. Write one genuinely reusable macro (a `cents_to_currency`
@@ -449,7 +456,7 @@ This phase is the biggest single differentiator in the project.
 
 Goal: the things that separate a course project from a project on a real team.
 
-- [ ] **5.1 Contracts and constraints on marts** ⭐ `[GOV]`
+- **5.1 Contracts and constraints on marts** ⭐ `[GOV]` · [#41](https://github.com/dogukan-arguc/dbt_portfolio/issues/41)
 
   `contract: {enforced: true}` on your mart models with column types and constraints
   declared. dbt then refuses to build a model whose shape drifted.
@@ -458,7 +465,7 @@ Goal: the things that separate a course project from a project on a real team.
   it, then revert. Note that DuckDB enforces only some constraint types; document which
   are checked vs informational.
 
-- [ ] **5.2 Model versions** `[GOV]`
+- **5.2 Model versions** `[GOV]` · [#42](https://github.com/dogukan-arguc/dbt_portfolio/issues/42)
 
   Version a mart (`fct_orders` v1 → v2 with a breaking change), with `latest_version` and
   a `deprecation_date` on v1.
@@ -466,14 +473,14 @@ Goal: the things that separate a course project from a project on a real team.
   *Done when:* both versions build, and `ref('fct_orders')` resolves to the version you
   intended.
 
-- [ ] **5.3 Groups and access** `[GOV]`
+- **5.3 Groups and access** `[GOV]` · [#43](https://github.com/dogukan-arguc/dbt_portfolio/issues/43)
 
   Define groups with owners in YAML. Set `access: private` on staging and intermediate,
   `access: public` on marts.
 
   *Done when:* a deliberate cross-group `ref()` of a private model raises an error.
 
-- [ ] **5.4 Exposures** `[GOV]` `[MONITOR]`
+- **5.4 Exposures** `[GOV]` `[MONITOR]` · [#44](https://github.com/dogukan-arguc/dbt_portfolio/issues/44)
 
   Declare your Evidence dashboard (phase 7) as an exposure with owner and depends-on.
   This makes downstream impact visible in the DAG — `dbt build --select +exposure:...`
@@ -481,7 +488,7 @@ Goal: the things that separate a course project from a project on a real team.
 
   *Done when:* the exposure appears in the docs site with its lineage.
 
-- [ ] **5.5 Documentation pass** `[GOV]`
+- **5.5 Documentation pass** `[GOV]` · [#45](https://github.com/dogukan-arguc/dbt_portfolio/issues/45)
 
   Doc blocks for anything repeated, a custom `overview.md` for the docs landing page,
   `persist_docs` enabled so descriptions land in the database catalog.
@@ -495,7 +502,7 @@ Goal: the things that separate a course project from a project on a real team.
 Goal: a green badge and a public docs URL. This is the part hiring managers actually
 click.
 
-- [ ] **6.1 CI on pull requests** ⭐ `[DEPLOY]`
+- **6.1 CI on pull requests** ⭐ `[DEPLOY]` · [#46](https://github.com/dogukan-arguc/dbt_portfolio/issues/46)
 
   A GitHub Actions workflow that on every PR installs the locked environment, seeds the
   sample data from 0.5, and runs `dbt build`. Since DuckDB is a file, CI needs no
@@ -514,7 +521,7 @@ click.
   someone forgot to lock. Cache `dbt_packages/` separately.
   </details>
 
-- [ ] **6.2 Slim CI with state comparison** ⭐ `[STATE]` `[DEPLOY]`
+- **6.2 Slim CI with state comparison** ⭐ `[STATE]` `[DEPLOY]` · [#47](https://github.com/dogukan-arguc/dbt_portfolio/issues/47)
 
   Build only what changed: `dbt build --select state:modified+ --defer --state ./prod-run-artifacts`.
   Requires publishing `manifest.json` from a main-branch run and downloading it in the PR
@@ -530,14 +537,14 @@ click.
   how `--defer` resolves unbuilt refs, is directly on the exam.
   </details>
 
-- [ ] **6.3 Scheduled production run** `[DEPLOY]` `[MONITOR]`
+- **6.3 Scheduled production run** `[DEPLOY]` `[MONITOR]` · [#48](https://github.com/dogukan-arguc/dbt_portfolio/issues/48)
 
   A `schedule:` workflow that runs the full build, uploads `manifest.json` and
   `run_results.json` as artifacts, and fails loudly.
 
   *Done when:* the scheduled run has succeeded at least once unattended.
 
-- [ ] **6.4 Publish dbt docs to GitHub Pages** ⭐ `[DEPLOY]`
+- **6.4 Publish dbt docs to GitHub Pages** ⭐ `[DEPLOY]` · [#49](https://github.com/dogukan-arguc/dbt_portfolio/issues/49)
 
   `dbt docs generate` and deploy `target/` to GitHub Pages. **A public, browsable lineage
   DAG is a link you can put directly on your CV** — a reviewer sees your whole model graph
@@ -551,7 +558,7 @@ click.
   Deploy it to a subpath (`/docs/`) so phase 7 can take the site root.
   </details>
 
-- [ ] **6.5 Pipeline monitoring** `[MONITOR]`
+- **6.5 Pipeline monitoring** `[MONITOR]` · [#50](https://github.com/dogukan-arguc/dbt_portfolio/issues/50)
 
   Parse `run_results.json` after each run into a small report: slowest models, test
   failures, total runtime. Optionally load the artifacts back into DuckDB and model them —
@@ -567,14 +574,14 @@ Goal: a live dashboard URL. **Evidence.dev**, not Streamlit — Evidence reads D
 natively and builds a *static* site, so GitHub Pages hosts it free with no server. Node
 v24 is already installed.
 
-- [ ] **7.1 Set up Evidence** `[DEPLOY]`
+- **7.1 Set up Evidence** `[DEPLOY]` · [#51](https://github.com/dogukan-arguc/dbt_portfolio/issues/51)
 
   Scaffold under `reports/`, point its DuckDB connection at the built warehouse, verify
   it queries your marts. Gitignore Evidence's build output.
 
   *Done when:* `npm run dev` renders a page fed by a real mart query.
 
-- [ ] **7.2 Build the pages**
+- **7.2 Build the pages** · [#52](https://github.com/dogukan-arguc/dbt_portfolio/issues/52)
 
   Four pages, each answering a question rather than dumping a table:
 
@@ -587,7 +594,7 @@ v24 is already installed.
   *Done when:* every page reads from a mart, with no business logic in the dashboard
   layer. Transformation belongs in dbt — that's the whole thesis of the project.
 
-- [ ] **7.3 Deploy the dashboard** ⭐ `[DEPLOY]`
+- **7.3 Deploy the dashboard** ⭐ `[DEPLOY]` · [#53](https://github.com/dogukan-arguc/dbt_portfolio/issues/53)
 
   Extend CI to build Evidence and publish it to GitHub Pages at the site root, with dbt
   docs at `/docs/`.
@@ -600,7 +607,7 @@ v24 is already installed.
 
 Goal: a stranger understands the project's value in ninety seconds.
 
-- [ ] **8.1 README**
+- **8.1 README** · [#54](https://github.com/dogukan-arguc/dbt_portfolio/issues/54)
 
   Structure: one-line pitch → live links (dashboard, docs) → architecture diagram → three
   interesting findings with numbers → the modeling decisions you're proudest of → local
@@ -611,23 +618,23 @@ Goal: a stranger understands the project's value in ninety seconds.
 
   *Done when:* someone who has never used dbt understands what you built and why.
 
-- [ ] **8.2 Architecture diagram**
+- **8.2 Architecture diagram** · [#55](https://github.com/dogukan-arguc/dbt_portfolio/issues/55)
 
   A Mermaid diagram in the README: CSV → DuckDB raw → staging → intermediate → marts →
   Evidence, with CI annotated. Mermaid renders natively on GitHub — no image files.
 
-- [ ] **8.3 The interesting findings**
+- **8.3 The interesting findings** · [#56](https://github.com/dogukan-arguc/dbt_portfolio/issues/56)
 
   Three concrete, quantified insights from your marts. "Orders delivered more than N days
   late average a review score of X versus Y for on-time" beats any amount of listed
   tooling. Numbers, not adjectives.
 
-- [ ] **8.4 CV entry**
+- **8.4 CV entry** · [#57](https://github.com/dogukan-arguc/dbt_portfolio/issues/57)
 
   Two lines, both with links: what the pipeline does and its scale (model count, test
   count, row count), plus the stack. Let the live docs link carry the proof.
 
-- [ ] **8.5 Certification self-check**
+- **8.5 Certification self-check** · [#58](https://github.com/dogukan-arguc/dbt_portfolio/issues/58)
 
   Walk the coverage table below. Anything unchecked is a gap to close before the exam —
   either in the project or in dedicated study.

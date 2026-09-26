@@ -52,8 +52,9 @@ there. Escalate only when he asks again.
 read internationally.
 
 The one exception is `TASKS.tr.md`, a section-by-section Turkish mirror of the roadmap.
-It carries no checkboxes: progress lives in `TASKS.md` alone, so the two files can never
-disagree about what is done. Edit both when a task's wording changes.
+Neither file carries progress: it lives in GitHub issues alone (see *Working agreements*),
+so the files can never disagree about what is done. Edit both when a task's wording
+changes, and when a task is added, create its issue and link it from both.
 
 Chat conversation with the owner is in **Turkish**.
 
@@ -141,8 +142,8 @@ VS Code extension. Close it. For read-only inspection always connect with
 ```
 dbt_portfolio/
 ├── CLAUDE.md              # this file
-├── TASKS.md               # the roadmap — the owner's working document
-├── TASKS.tr.md            # Turkish mirror of the roadmap — no checkboxes
+├── TASKS.md               # the roadmap — scope and definition of done, links to issues
+├── TASKS.tr.md            # Turkish mirror of the roadmap
 ├── README.md              # setup guide; becomes the portfolio front door in phase 8
 ├── pyproject.toml         # dependency declarations
 ├── uv.lock                # resolved versions — committed
@@ -265,8 +266,13 @@ catalog name from the filename `olist.duckdb`. All nine tables are declared.
 - Before proposing a change to an existing model, read the model **and** its YAML.
 - When something fails, report the actual error output. Do not summarize a failure as a
   success or skip a step quietly.
-- `TASKS.md` is the source of truth for scope and sequencing. When a task is finished,
-  the owner ticks the box — offer to, but do not tick it for him.
+- `TASKS.md` is the source of truth for scope and sequencing; **GitHub issues are the
+  source of truth for progress.** Each task is one issue (`#8`–`#58` for the original 51),
+  each phase a milestone, each cert tag an `exam:*` label, ⭐ a `showcase` label, and all
+  of them sit on the [Olist dbt Roadmap](https://github.com/users/dogukan-arguc/projects/1)
+  project. A task is closed by the commit or PR that finishes it (`Closes #N`). Check the
+  issue's definition of done before calling a task finished; the owner closes it — offer
+  to, but do not close it for him.
 - **Never round-trip a Markdown file through a WYSIWYG or preview-based editor.** Commit
   `8aec9e8` did exactly that to `TASKS.md`: hard wraps collapsed into single 1,200-character
   lines, `**bold**` and backticks inside the raw-HTML blocks were stripped, 14 nested
