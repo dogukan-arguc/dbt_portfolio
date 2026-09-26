@@ -98,6 +98,11 @@ models:
         description: Price of the product.
         data_tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                strictly: true
+              
 
       - name: order_item_freight_value
         description: Freight value of the product.
@@ -137,6 +142,12 @@ models:
       
       - name: payment_installments
         description: Installment number of the payment.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 36
+
 
       - name: payment_value
         description: Total payment value.
@@ -171,9 +182,10 @@ models:
       - name: review_score
         description: score that customer gave to the order. It can be 1-5.
         data_tests:
-          - accepted_values:
+          - dbt_expectations.expect_column_values_to_be_between:
               arguments:
-                values: [1,2,3,4,5]
+                min_value: 1
+                max_value: 5
 
       - name: review_comment_title
         description: Review title.
