@@ -1,0 +1,19 @@
+unit_tests:
+  - name: test_payments_pivot_sums_by_type
+    description: Payments of an order are summed per payment type and in total.
+    model: fct_order_payments
+    config:
+      enabled: false
+    given:
+      - input: ref('stg_olist__orders')
+        rows:
+          - {order_id: '1'}
+        
+      - input: ref('stg_olist__order_payments')
+        rows:
+          - {order_id: '1', payment_type: 'credit_card', payment_value: 100}
+          - {order_id: '1', payment_type: 'voucher', payment_value: 200}
+    
+    expect:
+      rows:
+        - {order_id: '1', credit_card_amount: 100, voucher_amount: 200, total_payment: 300}
