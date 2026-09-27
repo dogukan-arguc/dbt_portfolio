@@ -167,6 +167,7 @@ models:
           - unique: # This is duplicated rows. A customer can't send 2 reviews at the same exact time theorically. will solve in next step
               config:
                 severity: warn
+                store_failures: true
           - not_null
 
       - name: order_id
@@ -286,9 +287,11 @@ models:
                 field: product_category_name
               config:
                 severity: warn
+                store_failures: true
           - not_null:
               config:
                 severity: warn
+                store_failures: true
 
       - name: product_name_length
         description: product name length.
