@@ -1,9 +1,9 @@
 unit_tests:
   - name: test_payments_pivot_sums_by_type
     description: Payments of an order are summed per payment type and in total.
-    model: fct_order_payments
+    model: int_olist__order_payments
     config:
-      enabled: false
+      enabled: true
     given:
       - input: ref('stg_olist__orders')
         rows:
