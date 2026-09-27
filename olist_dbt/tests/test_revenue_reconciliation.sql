@@ -8,7 +8,7 @@
     )
 
 }}
-
+-- this test throwing 576 errors. some of them have 1% tolerance. some of them system bug with payment installments. some of them real errors user paid lower.
 WITH order_total_price as (
 
     SELECT 

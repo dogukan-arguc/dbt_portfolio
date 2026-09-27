@@ -164,7 +164,7 @@ models:
       - name: review_id
         description: review identifier that customer did.
         data_tests:
-          - unique: # This is duplicated rows. A customer can't send 2 reviews at the same exact time theorically.
+          - unique: # This is duplicated rows. A customer can't send 2 reviews at the same exact time theorically. will solve in next step
               config:
                 severity: warn
           - not_null
