@@ -1,0 +1,10 @@
+version: 2
+
+
+models:
+  - name: int_olist__order_payments
+    columns:
+
+      - name: order_id
+        data_tests:
+          - unique

@@ -1,0 +1,12 @@
+version: 2
+
+
+models:
+  - name: dim_olist__customers
+    description: DIM model for customers. Included first, last orders and lifetime counts & sums. A point, a customer has one exact customer_unique_id and may have multiple customer_id. because every order has different customer_id. 
+    columns:
+
+      - name: customer_unique_id
+        data_tests:
+          - unique
+          - not_null
