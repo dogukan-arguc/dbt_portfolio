@@ -44,6 +44,7 @@ seeds:
   olist_dbt:
     sample:
       +schema: sample
+    +schema: seeds
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 

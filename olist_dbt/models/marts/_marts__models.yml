@@ -54,6 +54,9 @@ models:
 
       - name: seller_zip_code_prefix
         description: zip code prefix of the seller
+        data_tests:
+          - unique
+          - not_null
 
       - name: seller_city
         description: city of the seller. some city names are not clean in the source, for example 'sp' instead of 'sao paulo'.
@@ -72,3 +75,22 @@ models:
 
       - name: total_order_item_price
         description: sum of the prices of the items this seller sold. only this seller's items are counted, not the whole order. freight is not included.
+
+  - name: dim_olist__geolocation
+    description: "DIM model for geolocation. One row per zip code prefix, with one representative coordinate and one city and state. The source has about 1M rows for about 19k prefixes. One prefix covers a whole area with many addresses, so its rows are spread out, and some rows are badly geocoded (a few points are even outside Brazil). Lat and lng use the median, not the mean, because one bad point can pull the mean very far. For example prefix 57319 has 3 rows and one of them is in the northern hemisphere, so the mean latitude lands in the Atlantic Ocean while the median stays in Brazil. City and state are picked together as the most frequent (city, state) pair of the prefix, so they always come from the same rows. A few prefixes have more than one state in the source, and picking city and state separately could give a pair that does not exist. If two pairs are equally frequent, the alphabetically first city wins, so the result is the same on every run."
+    columns:
+
+      - name: geolocation_zip_code_prefix
+        description: first five digits of the zip code. the grain of this model, one row per prefix.
+
+      - name: geolocation_lat
+        description: median latitude of all source rows for this prefix. median is used because it is not moved by badly geocoded points.
+
+      - name: geolocation_lng
+        description: median longitude of all source rows for this prefix. taken separately from the latitude, which is fine at the size of one prefix.
+
+      - name: geolocation_city
+        description: "most frequent city spelling for this prefix. spellings are counted as they are written, accents are not removed. so 'armacao dos buzios' and 'armação dos búzios' are counted separately, and the column has both accented and unaccented names."
+
+      - name: geolocation_state
+        description: state of the prefix, two letter code (SP, RJ, ...). it comes from the same row as geolocation_city, so the city and state always belong together.
