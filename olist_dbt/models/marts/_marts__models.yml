@@ -16,6 +16,59 @@ models:
     description: DIM model for products.
     columns:
       - name: product_id
+        description: " {{ doc('product_id') }} "
         data_tests:
           - unique
           - not_null
+
+      - name: product_category_name
+        description: Category of the product (English)
+
+      - name: product_name_length
+        description: product name length.
+
+      - name: product_description_length
+        description: product description length
+
+      - name: product_photos_qty
+        description: number of photos of the product
+
+      - name: product_weight_g
+        description: weight of the product
+
+      - name: product_length_cm
+        description: length of the product
+
+      - name: product_height_cm
+        description: height of the product
+
+      - name: product_width_cm
+        description: width of the product
+
+  - name: dim_olist__sellers
+    description: DIM model for sellers. One row per seller. Included first and last order approval dates, order count and total sales. Sales are calculated on item level, because one order can have items from different sellers. If we used the order total, every seller in that order would get the whole order amount.
+    columns:
+
+      - name: seller_id
+        description: "{{ doc('seller_id') }}"
+
+      - name: seller_zip_code_prefix
+        description: zip code prefix of the seller
+
+      - name: seller_city
+        description: city of the seller. some city names are not clean in the source, for example 'sp' instead of 'sao paulo'.
+
+      - name: seller_state
+        description: state of the seller, two letter code (SP, RJ, ...)
+
+      - name: order_count
+        description: number of distinct orders that have at least one item from this seller
+
+      - name: first_order_approved_at_timestamp
+        description: approval date of the seller's first order. orders without an approval date are skipped here, but they are still in order_count and total_order_item_price.
+
+      - name: last_order_approved_at_timestamp
+        description: approval date of the seller's last order
+
+      - name: total_order_item_price
+        description: sum of the prices of the items this seller sold. only this seller's items are counted, not the whole order. freight is not included.
