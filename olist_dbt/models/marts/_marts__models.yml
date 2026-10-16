@@ -10,3 +10,12 @@ models:
         data_tests:
           - unique
           - not_null
+  
+
+  - name: dim_olist__products
+    description: DIM model for products.
+    columns:
+      - name: product_id
+        data_tests:
+          - unique
+          - not_null
