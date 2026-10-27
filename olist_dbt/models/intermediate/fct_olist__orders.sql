@@ -28,7 +28,7 @@ orders AS (
         order_estimated_delivery_date,
         CASE
             WHEN order_estimated_delivery_date > order_delivered_customer_timestamp THEN 'early'
-            WHEN order_estimated_delivery_date = order_delivered_customer_timestamp THEN 'on time'
+            WHEN order_estimated_delivery_date = CAST(order_delivered_customer_timestamp AS DATE) THEN 'on time'
             WHEN order_estimated_delivery_date < order_delivered_customer_timestamp THEN 'late'
             ELSE 'unknown'
         END AS delivery_early_late_ontime
