@@ -46,12 +46,9 @@ order_reviews AS (
 final AS (
     SELECT *
     FROM orders o
-    JOIN order_items_category_seller oi
-        ON oi.order_id = o.order_id
-    JOIN order_payments op
-        ON op.order_id = o.order_id
-    JOIN order_reviews orr
-        ON orr.order_id = o.order_id
+    JOIN order_items_category_seller oi USING (order_id)
+    JOIN order_payments op USING (order_id)
+    JOIN order_reviews orr USING (order_id)
 )
 
 SELECT *
