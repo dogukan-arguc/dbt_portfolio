@@ -10,7 +10,7 @@ WITH order_items_category_seller AS (
 order_payments AS (
     SELECT 
         order_id,
-        SUM(total_payment)
+        SUM(total_payment) as total_payment
     FROM {{ ref('int_olist__order_payments') }}
     GROUP BY order_id
 ),
