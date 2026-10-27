@@ -25,11 +25,16 @@ order_payments AS (
     FROM {{ ref('int_olist__order_payments') }}
 ),
 weighted AS (
-
-    -- do on yourself
+    SELECT
+        oi.*,
+        op.total_payment,
+        SUM(oi.line_total) OVER (PARTITION BY oi.order_id) AS order_line_total,
+        ROW_NUMBER() OVER ( PARTITION BY oi.order_id ORDER BY oi.order_item_id DESC) AS rn_desc
+    FROM order_items oi
+    LEFT JOIN order_payments op ON oi.order_id = op.order_id 
 ),
 allocated AS (
-
+    
 
 
 
