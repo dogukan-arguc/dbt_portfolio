@@ -45,6 +45,12 @@ seeds:
     sample:
       +schema: sample
     +schema: seeds
+
+
+vars:
+  dim_date_start: "2016-01-01"
+  dim_date_end: "2021-01-01"   # exclusive
+
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 

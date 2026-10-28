@@ -94,3 +94,11 @@ models:
 
       - name: geolocation_state
         description: state of the prefix, two letter code (SP, RJ, ...). it comes from the same row as geolocation_city, so the city and state always belong together.
+        
+  - name: dim_date
+    description: One row per calendar day.
+    columns:
+      - name: date_key
+        tests: [unique, not_null]
+      - name: date_day
+        tests: [unique, not_null]
